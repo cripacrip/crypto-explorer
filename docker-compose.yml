@@ -1,0 +1,73 @@
+services:
+  backend:
+    build:
+      context: ./packages/backend
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./packages/backend:/app
+      - /app/node_modules
+      - ./.env.development:/app/.env.development
+    environment:
+      - NODE_ENV=development
+      - APPLICATION_PORT=5000
+      - APPLICATION_DB_HOST=db
+      - APPLICATION_DB_USERNAME=wakawaka
+      - APPLICATION_DB_PASSWORD=cripacrip
+      - APPLICATION_DB_DATABASE=crypto_explorer
+      - APPLICATION_DB_PORT=5432
+      - APPLICATION_DB_DIALECT=postgres
+      - ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+      - COINMARKETCAP_API_KEY=17f41464-057b-407f-92e7-b7bfde67787d
+      - COINMARKETCAP_BASE_URL=https://pro-api.coinmarketcap.com
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./packages/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./packages/frontend:/app
+      - /app/node_modules
+      - ./.env.development:/app/.env.development
+    environment:
+      - NODE_ENV=development
+      - HOST=0.0.0.0
+      - PORT=3000
+      - VITE_APP_API_VER=/api
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  db:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=wakawaka
+      - POSTGRES_PASSWORD=cripacrip
+      - POSTGRES_DB=crypto_explorer
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wakawaka -d crypto_explorer"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
