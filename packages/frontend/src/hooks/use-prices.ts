@@ -1,25 +1,22 @@
 import { useState, useEffect } from 'react';
-import { api } from '@/api/_api';
-
-interface Coin {
-  id: string;
-  name: string;
-  current_price: number;
-}
+import { api, type Coin } from '@/api/_api';
 
 export const usePrices = () => {
   const [coins, setCoins] = useState<Coin[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCoins = async () => {
       try {
-        // const data = await api.get('/cryptocurrency/listings/latest');
+        setLoading(true);
+        setError(null);
         const data = await api.get('/coins');
         setCoins(data as Coin[]);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching coins:', error);
+      } catch (err) {
+        console.error('Error fetching coins:', err);
+        setError(err instanceof Error ? err.message : 'Failed to fetch coins');
+      } finally {
         setLoading(false);
       }
     };
@@ -27,5 +24,5 @@ export const usePrices = () => {
     fetchCoins();
   }, []);
 
-  return { coins, loading };
+  return { coins, loading, error };
 };

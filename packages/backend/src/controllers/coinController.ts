@@ -4,21 +4,35 @@ import { getLatestCoins, getCoinDetails } from '../services/coinMarketCapService
 export const listCoins = {
   schema: {
     query: {
-      // e.g., { limit: number }
+      // e.g., { limit: number, start: number }
     },
   },
   handler: async (req: Request, res: Response) => {
     try {
       const limit = parseInt((req.query.limit as string) || '10');
+      const start = parseInt((req.query.start as string) || '1');
+
       if (Number.isNaN(limit) || limit < 1) {
         return res.status(400).json({ success: false, error: 'Invalid limit' });
       }
       if (limit > 100) {
         return res.status(400).json({ success: false, error: 'Limit cannot exceed 100 coins' });
       }
+      if (Number.isNaN(start) || start < 1) {
+        return res.status(400).json({ success: false, error: 'Invalid start parameter' });
+      }
 
-      const coins = await getLatestCoins(limit);
-      return res.json({ success: true, data: coins, count: coins.length });
+      const coins = await getLatestCoins(limit, start);
+      return res.json({
+        success: true,
+        data: coins,
+        count: coins.length,
+        pagination: {
+          start,
+          limit,
+          total: coins.length
+        }
+      });
     } catch (error) {
       if (error instanceof Error) {
         if (error.message.includes('API key is required')) {

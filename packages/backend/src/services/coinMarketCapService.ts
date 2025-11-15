@@ -37,7 +37,7 @@ const getConfig = () => {
   return { baseUrl, apiKey };
 };
 
-export const getLatestCoins = async (limit: number = 10): Promise<FormattedCoin[]> => {
+export const getLatestCoins = async (limit: number = 10, start: number = 1): Promise<FormattedCoin[]> => {
   const { baseUrl, apiKey } = getConfig();
 
   if (!apiKey) {
@@ -45,7 +45,7 @@ export const getLatestCoins = async (limit: number = 10): Promise<FormattedCoin[
   }
 
   const response = await fetch(
-    `${baseUrl}/v1/cryptocurrency/listings/latest?limit=${limit}`,
+    `${baseUrl}/v1/cryptocurrency/listings/latest?limit=${limit}&start=${start}`,
     {
       headers: {
         'X-CMC_PRO_API_KEY': apiKey,

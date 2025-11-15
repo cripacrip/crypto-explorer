@@ -1,13 +1,26 @@
-interface Coin {
+export interface Coin {
   id: string;
   name: string;
+  symbol: string;
   current_price: number;
+  market_cap: number;
+  volume_24h: number;
+  percent_change_24h: number;
   statusText?: string;
 }
 
+export interface PaginationInfo {
+  start: number;
+  limit: number;
+  total: number;
+}
+
 interface ApiResponse {
-  status: 'success' | 'error';
-  response: Coin[] | { code: number; statusText: string };
+  success: boolean;
+  data?: Coin[];
+  count?: number;
+  pagination?: PaginationInfo;
+  error?: string;
 }
 
 export class ApiCaller {
@@ -39,17 +52,17 @@ export class ApiCaller {
         },
       });
       const data: ApiResponse = await response.json();
-      if (data.status === 'success') {
-        return options.needRaw ? data : data.response;
+      if (data.success) {
+        return options.needRaw ? data : data.data;
       }
-      throw new Error(data.response.statusText || 'API request failed');
+      throw new Error(data.error || 'API request failed');
     } catch (error) {
       console.error(`Error fetching ${endpoint}:`, error);
       throw error;
     }
   }
 
-  async post(endpoint: string, data: Record<string, any> = {}, options: { needRaw?: boolean } = {}) {
+  async post(endpoint: string, data: Record<string, unknown> = {}, options: { needRaw?: boolean } = {}) {
     const base = this.baseURL;
     const url = `${base}${this.apiVersion}${endpoint}`;
     try {
@@ -61,10 +74,10 @@ export class ApiCaller {
         body: JSON.stringify(data),
       });
       const responseData: ApiResponse = await response.json();
-      if (responseData.status === 'success') {
-        return options.needRaw ? responseData : responseData.response;
+      if (responseData.success) {
+        return options.needRaw ? responseData : responseData.data;
       }
-      throw new Error(responseData.response.statusText || 'API request failed');
+      throw new Error(responseData.error || 'API request failed');
     } catch (error) {
       console.error(`Error posting to ${endpoint}:`, error);
       throw error;

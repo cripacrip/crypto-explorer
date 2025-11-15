@@ -15,7 +15,7 @@ import { NavLink } from "react-router-dom"
 
 const items = [
   {
-    title: "Home",
+    title: "Dashboard",
     url: "/",
     icon: Home,
   },
@@ -43,7 +43,7 @@ const items = [
 
 export function AppSidebar() {
   const { state } = useSidebar();
-  console.log(state)
+
   return (
     <Sidebar collapsible="icon">
       <SidebarContent className="bg-sidebar-primary text-white">

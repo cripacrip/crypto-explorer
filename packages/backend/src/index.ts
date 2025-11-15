@@ -41,53 +41,8 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Тестовий ендпоінт
-app.get('/api/test', (req, res) => {
-  res.json({ 
-    message: 'Backend is running!',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
-  });
-});
-
 // API routes
 app.use('/api/coins', coinRoutes);
-
-// Ендпоінт для додавання транзакції
-app.post('/api/transactions', async (req, res) => {
-  try {
-    const { coinId, amount, price } = req.body;
-    const transaction = await Transaction.create({ coinId, amount, price });
-    res.json({
-      success: true,
-      data: transaction
-    });
-  } catch (error) {
-    res.status(500).json({ 
-      success: false,
-      error: 'Failed to create transaction' 
-    });
-    console.error('Error creating transaction:', error);
-  }
-});
-
-// Ендпоінт для отримання транзакцій
-app.get('/api/transactions', async (req, res) => {
-  try {
-    const transactions = await Transaction.findAll();
-    res.json({
-      success: true,
-      data: transactions,
-      count: transactions.length
-    });
-  } catch (error) {
-    res.status(500).json({ 
-      success: false,
-      error: 'Failed to fetch transactions' 
-    });
-    console.error('Error fetching transactions:', error);
-  }
-});
 
 // 404 handler
 app.use(notFound);
