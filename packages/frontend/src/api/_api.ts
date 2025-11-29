@@ -15,11 +15,19 @@ export interface PaginationInfo {
   total: number;
 }
 
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  role: string;
+}
+
 interface ApiResponse {
   success: boolean;
-  data?: Coin[];
+  data?: any;
   count?: number;
   pagination?: PaginationInfo;
+  message?: string;
   error?: string;
 }
 
@@ -31,6 +39,37 @@ export class ApiCaller {
     // Use relative path by default so Vite proxy handles routing in dev and nginx in prod
     this.baseURL = (import.meta.env.VITE_APP_API_HTTP || '').trim();
     this.apiVersion = (import.meta.env.VITE_APP_API_VER || '/api').trim();
+  }
+
+  // Auth token management
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
+  saveToken(token: string): void {
+    localStorage.setItem('token', token);
+  }
+
+  removeToken(): void {
+    localStorage.removeItem('token');
+  }
+
+  isAuthenticated(): boolean {
+    return !!this.getToken();
+  }
+
+  // Get auth headers
+  private getAuthHeaders(): HeadersInit {
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+
+    const token = this.getToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    return headers;
   }
 
   async get(endpoint: string, query: Record<string, string> = {}, options: { needRaw?: boolean } = {}) {
@@ -47,9 +86,7 @@ export class ApiCaller {
     try {
       const response = await fetch(url, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.getAuthHeaders(),
       });
       const data: ApiResponse = await response.json();
       if (data.success) {
@@ -68,9 +105,7 @@ export class ApiCaller {
     try {
       const response = await fetch(url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.getAuthHeaders(),
         body: JSON.stringify(data),
       });
       const responseData: ApiResponse = await response.json();

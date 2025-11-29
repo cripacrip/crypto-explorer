@@ -21,6 +21,7 @@ services:
       - ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
       - COINMARKETCAP_API_KEY=17f41464-057b-407f-92e7-b7bfde67787d
       - COINMARKETCAP_BASE_URL=https://pro-api.coinmarketcap.com
+      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production-use-long-random-string
     depends_on:
       db:
         condition: service_healthy
