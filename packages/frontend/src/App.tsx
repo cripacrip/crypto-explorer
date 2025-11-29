@@ -1,16 +1,21 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Dashboard from "@/pages/Dashboard";
-import About from "@/pages/About";
-import Login from "@/pages/Login";
-import NotFound from "@/pages/NotFound";
-import Layout from "@/layout/Layout";
+import SignIn from '@/components/forms/SignIn';
+import SignUp from '@/components/forms/SignUp';
+import Auth from '@/layout/Auth';
+import Main from '@/layout/Main';
+import About from '@/pages/About';
+import Dashboard from '@/pages/Dashboard';
+import NotFound from '@/pages/NotFound';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route element={<Layout />}>
+        <Route element={<Auth />}>
+          <Route path="/login" element={<SignIn />} />
+          <Route path="/sign-up" element={<SignUp />} />
+        </Route>
+        <Route element={<Main />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/about" element={<About />} />
           <Route path="/inbox" element={<div>Inbox Page</div>} />
