@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { register, login, getMe } from '../controllers/authController';
+
+import { getMe, logOut, login, register } from '../controllers/authController';
 import { authenticateJwt } from '../middleware/authenticateJwt';
 
 const router = Router();
@@ -10,5 +11,6 @@ router.post('/login', login);
 
 // Protected routes (authentication required)
 router.get('/me', authenticateJwt, getMe);
+router.post('/logout', authenticateJwt, logOut);
 
 export default router;

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { createUser, getUserByCredentials } from '../models/User.model';
+import { createUser, getUserByCredentials, getUserById, updateUserRefreshToken } from '../models/User.model';
 import { comparePassword, generateToken, hashPassword } from '../services/auth.service';
 
 /**
@@ -157,8 +157,6 @@ export const getMe = async (req: Request, res: Response) => {
         error: 'Not authenticated',
       });
     }
-
-    const { getUserById } = await import('../models/User.model');
     const user = await getUserById(userId);
 
     if (!user) {
@@ -184,6 +182,38 @@ export const getMe = async (req: Request, res: Response) => {
     return res.status(500).json({
       success: false,
       error: 'Failed to get user profile',
+    });
+  }
+};
+
+/**
+ * Logout a user
+ * POST /api/auth/logout
+ */
+export const logOut = async (req: Request, res: Response) => {
+  try {
+    // User is attached to req by JWT middleware
+    const userId = (req as any).user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: 'Not authenticated',
+      });
+    }
+
+    // Clear refresh token from database
+    await updateUserRefreshToken(userId, null);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Logged out successfully',
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to logout',
     });
   }
 };
