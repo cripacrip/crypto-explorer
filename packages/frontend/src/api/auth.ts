@@ -83,6 +83,14 @@ export const isAuthenticated = (): boolean => {
 /**
  * Logout user
  */
-export const logout = (): void => {
-  removeToken();
+export const logout = async (): Promise<void> => {
+  try {
+    // Call backend logout endpoint to clear refresh token
+    await api.post('/auth/logout', {}, { needRaw: true });
+  } catch (error) {
+    console.error('Logout error:', error);
+  } finally {
+    // Always remove token from localStorage, even if backend call fails
+    removeToken();
+  }
 };
