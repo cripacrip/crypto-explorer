@@ -145,10 +145,11 @@ export const login = async (req: Request, res: Response) => {
 /**
  * Get current user profile
  * GET /api/auth/me
+ * IMPORTANT: Uses JWT token (not ID in URL) to identify user
  */
 export const getMe = async (req: Request, res: Response) => {
   try {
-    // User is attached to req by JWT middleware
+    // Get userId FROM TOKEN (set by authenticateJwt middleware)
     const userId = (req as any).user?.userId;
 
     if (!userId) {
@@ -157,6 +158,8 @@ export const getMe = async (req: Request, res: Response) => {
         error: 'Not authenticated',
       });
     }
+
+    // Fetch user data using ID extracted from token
     const user = await getUserById(userId);
 
     if (!user) {
@@ -185,7 +188,6 @@ export const getMe = async (req: Request, res: Response) => {
     });
   }
 };
-
 /**
  * Logout a user
  * POST /api/auth/logout
