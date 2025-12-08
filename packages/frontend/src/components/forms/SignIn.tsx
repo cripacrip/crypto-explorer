@@ -1,9 +1,18 @@
 import { login } from '@/api/auth';
 import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
@@ -34,46 +43,54 @@ export default function Login() {
   };
 
   return (
-    <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
-      <h2 className="mb-6 text-center text-2xl font-bold">Login</h2>
-      {error && <p className="mb-4 text-center text-red-500">{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="usernameOrEmail" className="block text-sm font-medium text-gray-700">
-            Username or Email
-          </label>
-          <Input
-            type="text"
-            id="usernameOrEmail"
-            value={usernameOrEmail}
-            onChange={(e) => setUsernameOrEmail(e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
-          />
-        </div>
-        <div className="mb-6">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Password
-          </label>
-          <Input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
-          />
-        </div>
-        <Button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-md bg-blue-700 px-4 py-2 text-white hover:bg-blue-400 disabled:bg-blue-300"
-        >
-          {loading ? 'Logging in...' : 'Log In'}
+    <Card className="w-full max-w-sm">
+      <CardHeader>
+        <CardTitle>Login to your account</CardTitle>
+        <CardDescription>Enter your email or username below to login to your account</CardDescription>
+        <CardAction>
+          <Button variant="link" asChild>
+            <Link to="/sign-up">Sign Up</Link>
+          </Button>
+        </CardAction>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} id="login-form">
+          {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
+          <div className="flex flex-col gap-6">
+            <div className="grid gap-2">
+              <Label htmlFor="usernameOrEmail">Email or Username</Label>
+              <Input
+                id="usernameOrEmail"
+                type="text"
+                placeholder="m@example.com"
+                value={usernameOrEmail}
+                onChange={(e) => setUsernameOrEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="grid gap-2">
+              <div className="flex items-center">
+                <Label htmlFor="password">Password</Label>
+                <a href="#" className="ml-auto inline-block text-sm underline-offset-4 hover:underline">
+                  Forgot your password?
+                </a>
+              </div>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+        </form>
+      </CardContent>
+      <CardFooter className="flex-col gap-2">
+        <Button type="submit" form="login-form" className="w-full" disabled={loading}>
+          {loading ? 'Logging in...' : 'Login'}
         </Button>
-        <div className="mt-4"></div>
-        <Link to="/sign-up">Don't have an account? Sign in!</Link>
-      </form>
-    </div>
+      </CardFooter>
+    </Card>
   );
 }
